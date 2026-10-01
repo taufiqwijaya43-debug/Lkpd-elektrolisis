@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LKPD Kimia XII: Sel Elektrolisis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#EDF2F8; --paper:#FFFFFF; --ink:#0F1B2D; --muted:#506078; --line:#C9D5E3;
+  --katode:#1D6FE0; --katode-ink:#0E4FAF; --katode-soft:#E4EEFD;
+  --anode:#D93A40; --anode-ink:#A81F26; --anode-soft:#FCE9EA;
+  --spark:#FFD43B; --on-spark:#0F1B2D; --spark-soft:#FFF6D1;
+  --ok:#16875A; --ok-soft:#E0F4EA; --bad:#C0392B; --bad-soft:#FBE6E3;
+  --electrode:#2A3547;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0A111E; --paper:#121C2E; --ink:#E8EEF7; --muted:#9DB0C8; --line:#2B3A52;
+    --katode:#5AA2FF; --katode-ink:#8EBBFF; --katode-soft:#14284A;
+    --anode:#FF6B70; --anode-ink:#FF9498; --anode-soft:#3A1A20;
+    --spark-soft:#3A3412;
+    --ok:#4CC38A; --ok-soft:#10301F; --bad:#FF7A6B; --bad-soft:#3A1B17;
+    --electrode:#C9D6E8;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0A111E; --paper:#121C2E; --ink:#E8EEF7; --muted:#9DB0C8; --line:#2B3A52;
+  --katode:#5AA2FF; --katode-ink:#8EBBFF; --katode-soft:#14284A;
+  --anode:#FF6B70; --anode-ink:#FF9498; --anode-soft:#3A1A20;
+  --spark-soft:#3A3412;
+  --ok:#4CC38A; --ok-soft:#10301F; --bad:#FF7A6B; --bad-soft:#3A1B17;
+  --electrode:#C9D6E8;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 12px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  font-size:17px;line-height:1.6;
+}
+h1,h2,h3{font-family:'Bricolage Grotesque','Atkinson Hyperlegible',system-ui,sans-serif;line-height:1.15;margin:0}
+p{margin:0 0 .8em}
+a{color:var(--katode-ink)}
+sub,sup{line-height:0}
+.wrap{max-width:900px;margin:0 auto;padding:20px 16px 56px}
+
+/* Motif: bilah biru (katode) lalu merah (anode) */
+.split-bar{height:8px;border-radius:99px;background:linear-gradient(90deg,var(--katode) 0 50%,var(--anode) 50% 100%)}
+
+/* Hero */
+.hero{background:var(--paper);border-radius:24px;overflow:hidden;box-shadow:0 1px 0 var(--line),0 12px 40px -24px rgba(15,27,45,.45)}
+.hero .split-bar{border-radius:0;height:10px}
+.hero-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:8px;align-items:center;padding:28px 28px 8px}
+.hero h1{font-size:clamp(2.2rem,6vw,3.7rem);font-weight:800;letter-spacing:-.02em}
+.hero .sub{margin-top:14px;color:var(--muted);font-size:1.05rem;max-width:34ch}
+.hero figure{margin:0}
+.hero svg{width:100%;height:auto;display:block}
+.hero figcaption{font-size:.85rem;color:var(--muted);margin-top:4px}
+.ident{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:18px 28px 26px}
+.ident label{display:block;font-size:.85rem;color:var(--muted)}
+.ident input{width:100%;border:0;border-bottom:2px solid var(--line);background:transparent;color:var(--ink);font:inherit;padding:4px 0}
+.ident input:focus{outline:none;border-color:var(--katode)}
+.toolbar{display:flex;justify-content:flex-end;gap:8px;margin:0 0 12px}
+.btn{font:inherit;font-weight:700;background:var(--ink);color:var(--paper);border:0;border-radius:99px;padding:8px 18px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn:focus-visible,.opt:focus-visible,summary:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--katode);outline-offset:2px}
+
+/* Peta misi */
+.card{background:var(--paper);border-radius:18px;padding:22px 24px;margin-top:20px;box-shadow:0 1px 0 var(--line)}
+.goals{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.goals h2{font-size:1.35rem;margin-bottom:10px}
+.goals ul,.goals ol{margin:0;padding-left:1.2em}
+.goals li{margin-bottom:.35em}
+.mapl{list-style:none;padding:0!important}
+.mapl li{display:flex;gap:10px;align-items:baseline}
+.mapl .n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-weight:700;font-size:.9rem}
+.mapl small{color:var(--muted)}
+
+/* Misi */
+.mission{margin-top:44px}
+.mission>header{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.num{flex:none;width:48px;height:48px;border-radius:14px;background:var(--spark);color:var(--on-spark);display:grid;place-items:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.6rem;transform:rotate(-4deg)}
+.mission h2{font-size:clamp(1.55rem,4vw,2.1rem);font-weight:800;letter-spacing:-.01em}
+.time{color:var(--muted);margin:0 0 14px 62px;font-size:.95rem}
+.mission .split-bar{margin:0 0 18px;height:5px}
+h3{font-size:1.25rem;font-weight:800;margin:26px 0 8px}
+
+/* Kartu fenomena */
+.phen{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.phen article{background:var(--paper);border-radius:16px;padding:16px 18px;border:2px solid var(--line)}
+.phen .ic{font-size:2rem;line-height:1;display:block;margin-bottom:6px}
+.phen h3{margin:0 0 4px;font-size:1.1rem}
+.phen p{margin:0;font-size:.97rem}
+
+/* Kotak */
+.box{border-radius:14px;padding:14px 18px;margin:16px 0;background:var(--paper);border-left:8px solid var(--spark)}
+.box.tip{background:var(--spark-soft)}
+.box.warn{border-left-color:var(--anode);background:var(--anode-soft)}
+.box.info{border-left-color:var(--katode);background:var(--katode-soft)}
+.box h4{margin:0 0 4px;font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem}
+.box ul,.box ol{margin:.2em 0 0;padding-left:1.2em}
+.box li{margin-bottom:.2em}
+
+/* Percobaan */
+.exp{background:var(--paper);border-radius:20px;padding:22px 24px;margin-top:18px;border-top:8px solid var(--katode)}
+.exp.b{border-top-color:var(--anode)}
+.exp h3{margin-top:0;font-size:1.45rem}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:6px 28px}
+.steps{list-style:none;counter-reset:s;padding:0;margin:8px 0}
+.steps li{counter-increment:s;position:relative;padding:0 0 10px 44px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-weight:700}
+
+/* Tabel */
+.tbl{overflow-x:auto;margin:10px 0}
+table{border-collapse:collapse;width:100%;min-width:560px;background:var(--paper)}
+th,td{border:1.5px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--bg);font-family:'Bricolage Grotesque',sans-serif}
+th.k{background:var(--katode-soft);color:var(--katode-ink)}
+th.a{background:var(--anode-soft);color:var(--anode-ink)}
+td[contenteditable]{min-width:110px;min-height:2.6em}
+td[contenteditable]:focus{outline:3px solid var(--katode);outline-offset:-3px;background:var(--katode-soft)}
+td.pre{background:var(--bg)}
+
+/* Kolom jawab */
+.q-label{font-weight:700;margin:14px 0 4px}
+textarea.rule{display:block;width:100%;border:1.5px solid var(--line);border-radius:10px;background-color:var(--paper);color:var(--ink);font:inherit;line-height:30px;padding:0 12px;resize:vertical;
+  background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 29px,var(--line) 29px,var(--line) 30px);background-attachment:local}
+
+/* Aturan katode/anode */
+.rules{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0}
+.rule-card{border-radius:16px;padding:16px 18px}
+.rule-card.k{background:var(--katode-soft);border:2px solid var(--katode)}
+.rule-card.a{background:var(--anode-soft);border:2px solid var(--anode)}
+.rule-card h3{margin:0 0 6px}
+.rule-card.k h3{color:var(--katode-ink)}
+.rule-card.a h3{color:var(--anode-ink)}
+.rule-card ul{margin:0;padding-left:1.1em}
+.rule-card li{margin-bottom:.45em}
+.rx{font-weight:700;white-space:nowrap}
+
+/* Tangga hitung */
+.ladder{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0}
+.ladder span.s{background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:8px 12px;font-weight:700;text-align:center}
+.ladder span.ar{font-weight:800;color:var(--muted)}
+.formula{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:1.15rem;background:var(--paper);border:2px dashed var(--ink);border-radius:14px;padding:12px 18px;margin:12px 0;text-align:center}
+
+/* Kuis */
+.scorebar{position:sticky;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:5;display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--ink);color:var(--paper);border-radius:99px;padding:8px 8px 8px 20px;margin:12px 0;font-weight:700}
+.scorebar .btn{background:var(--spark);color:var(--on-spark);padding:6px 16px}
+.q{background:var(--paper);border-radius:16px;padding:16px 18px;margin:14px 0;border:2px solid var(--line)}
+.q p.stem{font-weight:700}
+.opt{display:block;width:100%;text-align:left;font:inherit;color:var(--ink);background:var(--bg);border:2px solid transparent;border-radius:10px;padding:8px 12px;margin:6px 0;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--katode)}
+.opt:disabled{cursor:default}
+.opt.right{background:var(--ok-soft);border-color:var(--ok)}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.expl{margin-top:8px;padding:10px 14px;border-radius:10px;background:var(--spark-soft);font-size:.97rem}
+
+/* Guru */
+details.guru{margin-top:48px;background:var(--paper);border-radius:18px;border:2px dashed var(--ink);padding:6px 22px}
+details.guru summary{cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.3rem;padding:14px 0}
+details.guru h3{font-size:1.1rem}
+details.guru .tbl table{min-width:480px}
+footer{margin-top:36px;color:var(--muted);font-size:.9rem;text-align:center}
+
+/* Responsif */
+@media (max-width:720px){
+  body{font-size:16px}
+  .hero-grid{grid-template-columns:1fr;padding:22px 18px 4px}
+  .ident{grid-template-columns:1fr 1fr;padding:14px 18px 22px}
+  .goals,.cols,.rules{grid-template-columns:1fr}
+  .time{margin-left:0}
+  .exp,.card{padding:18px 16px}
+}
+
+/* Gelembung hero: satu-satunya gerak otomatis */
+.bub{animation:rise 3.4s ease-in infinite;opacity:0}
+@keyframes rise{0%{transform:translateY(0);opacity:0}15%{opacity:.95}100%{transform:translateY(-130px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.bub{animation:none;opacity:.85}html{scroll-behavior:auto}}
+
+/* SVG */
+.sv-wire{stroke:var(--ink);stroke-width:4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.sv-batt{fill:var(--paper);stroke:var(--ink);stroke-width:4}
+.sv-el{fill:var(--electrode)}
+.sv-lk{fill:var(--katode-soft)}
+.sv-la{fill:var(--anode-soft)}
+.sv-bk{fill:none;stroke:var(--katode);stroke-width:2.6}
+.sv-ba{fill:none;stroke:var(--anode);stroke-width:2.6}
+.sv-t{fill:var(--ink);font:700 15px 'Atkinson Hyperlegible',sans-serif}
+.sv-tk{fill:var(--katode-ink)}
+.sv-ta{fill:var(--anode-ink)}
+.sv-big{font:800 30px 'Bricolage Grotesque',sans-serif}
+.sv-arrow{fill:var(--ink)}
+
+/* Cetak */
+@media print{
+  @page{margin:12mm}
+  :root,:root[data-theme="dark"]{
+    --bg:#FFFFFF; --paper:#FFFFFF; --ink:#0F1B2D; --muted:#506078; --line:#B9C6D6;
+    --katode:#1D6FE0; --katode-ink:#0E4FAF; --katode-soft:#E4EEFD;
+    --anode:#D93A40; --anode-ink:#A81F26; --anode-soft:#FCE9EA;
+    --spark-soft:#FFF6D1; --ok-soft:#E0F4EA; --bad-soft:#FBE6E3; --electrode:#2A3547;
+  }
+  body{font-size:12pt;background:#fff}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .toolbar,.scorebar,.expl{display:none!important}
+  details.guru:not([open]){display:none}
+  .wrap{padding:0}
+  .bub{animation:none;opacity:.85}
+  .mission{break-before:auto}
+  .exp,.q,.box,.rule-card,.phen article,.formula,tr{break-inside:avoid}
+  .hero{box-shadow:none;border:1px solid var(--line)}
+  .opt{border-color:var(--line)}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="toolbar">
+    <button class="btn ghost" type="button" onclick="window.print()">Cetak LKPD</button>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="split-bar" aria-hidden="true"></div>
+    <div class="hero-grid">
+      <div>
+        <h1>Listrik yang Membelah Zat</h1>
+        <p class="sub">LKPD Kimia kelas XII tentang sel elektrolisis. Kamu akan membuat gelembung dari air garam, menyepuh sebuah paku, lalu membongkar rahasia velg mengilap, aki motor, dan kaleng aluminium.</p>
+      </div>
+      <figure>
+        <svg viewBox="0 0 560 410" role="img" aria-label="Gambar sel elektrolisis: baterai di atas, gelas berisi larutan garam dengan dua elektroda. Di kiri katode negatif dengan banyak gelembung gas hidrogen dan larutan membiru. Di kanan anode positif dengan gelembung gas dan larutan memerah.">
+          <defs>
+            <clipPath id="liq"><path d="M84 170 H476 V318 Q476 340 454 340 H106 Q84 340 84 318 Z"/></clipPath>
+          </defs>
+          <!-- larutan: kiri biru (basa), kanan merah (asam) -->
+          <g clip-path="url(#liq)">
+            <rect class="sv-lk" x="84" y="170" width="196" height="172"/>
+            <rect class="sv-la" x="280" y="170" width="196" height="172"/>
+          </g>
+          <!-- kabel -->
+          <path class="sv-wire" d="M205 46 H120 V118"/>
+          <path class="sv-wire" d="M355 46 H440 V118"/>
+          <!-- baterai -->
+          <rect class="sv-batt" x="205" y="22" width="150" height="48" rx="10"/>
+          <text class="sv-t sv-big sv-tk" x="235" y="55" text-anchor="middle">&#8722;</text>
+          <text class="sv-t sv-big sv-ta" x="325" y="55" text-anchor="middle">+</text>
+          <!-- panah elektron -->
+          <polygon class="sv-arrow" points="113,80 127,80 120,95"/>
+          <polygon class="sv-arrow" points="433,95 447,95 440,80"/>
+          <text class="sv-t" x="136" y="92">e&#8315;</text>
+          <text class="sv-t" x="452" y="92">e&#8315;</text>
+          <!-- elektroda -->
+          <rect class="sv-el" x="112" y="112" width="16" height="196" rx="3"/>
+          <rect class="sv-el" x="432" y="112" width="16" height="196" rx="3"/>
+          <!-- gelas -->
+          <path class="sv-wire" d="M80 110 V320 Q80 348 108 348 H452 Q480 348 480 320 V110"/>
+          <!-- gelembung katode -->
+          <circle class="bub sv-bk" cx="104" cy="290" r="6" style="animation-delay:0s"/>
+          <circle class="bub sv-bk" cx="138" cy="296" r="5" style="animation-delay:.5s"/>
+          <circle class="bub sv-bk" cx="110" cy="300" r="7" style="animation-delay:1s"/>
+          <circle class="bub sv-bk" cx="142" cy="288" r="6" style="animation-delay:1.5s"/>
+          <circle class="bub sv-bk" cx="100" cy="296" r="4" style="animation-delay:2s"/>
+          <circle class="bub sv-bk" cx="136" cy="302" r="6" style="animation-delay:2.6s"/>
+          <!-- gelembung anode -->
+          <circle class="bub sv-ba" cx="424" cy="292" r="6" style="animation-delay:.3s"/>
+          <circle class="bub sv-ba" cx="456" cy="298" r="5" style="animation-delay:1.4s"/>
+          <circle class="bub sv-ba" cx="428" cy="300" r="7" style="animation-delay:2.3s"/>
+          <!-- label -->
+          <text class="sv-t sv-tk" x="182" y="378" text-anchor="middle">Katode (&#8722;), reduksi</text>
+          <text class="sv-t sv-tk" x="182" y="398" text-anchor="middle" style="font-weight:400">H&#8322; dan OH&#8315;</text>
+          <text class="sv-t sv-ta" x="378" y="378" text-anchor="middle">Anode (+), oksidasi</text>
+          <text class="sv-t sv-ta" x="378" y="398" text-anchor="middle" style="font-weight:400">Cl&#8322; atau O&#8322;</text>
+        </svg>
+        <figcaption>Larutan garam dengan indikator kol ungu: biru-hijau di dekat katode (basa), merah muda di dekat anode (asam).</figcaption>
+      </figure>
+    </div>
+    <div class="ident">
+      <div><label for="f-nama">Nama</label><input id="f-nama" type="text" autocomplete="off"></div>
+      <div><label for="f-kelas">Kelas</label><input id="f-kelas" type="text" autocomplete="off"></div>
+      <div><label for="f-kel">Kelompok</label><input id="f-kel" type="text" autocomplete="off"></div>
+      <div><label for="f-tgl">Tanggal</label><input id="f-tgl" type="text" autocomplete="off"></div>
+    </div>
+  </header>
+
+  <!-- PETA MISI -->
+  <section class="card goals" aria-labelledby="peta">
+    <div>
+      <h2 id="peta">Setelah LKPD ini, kamu bisa</h2>
+      <ul>
+        <li>membedakan sel volta dan sel elektrolisis,</li>
+        <li>menentukan reaksi di katode dan anode,</li>
+        <li>menjelaskan penyepuhan dan pemurnian logam,</li>
+        <li>menghitung hasil elektrolisis dengan hukum Faraday.</li>
+      </ul>
+      <p style="margin-top:12px;color:var(--muted);font-size:.95rem">Alokasi waktu sekitar 2 &times; 45 menit. Percobaan dilakukan berkelompok (3 sampai 4 orang) dengan bimbingan guru.</p>
+    </div>
+    <div>
+      <h2>Lima misi untukmu</h2>
+      <ol class="mapl">
+        <li><span class="n">1</span><span><a href="#m1">Cermati sekitarmu</a> <small>fenomena sehari-hari</small></span></li>
+        <li><span class="n">2</span><span><a href="#m2">Bongkar lewat percobaan</a> <small>air garam dan penyepuhan</small></span></li>
+        <li><span class="n">3</span><span><a href="#m3">Temukan aturan mainnya</a> <small>katode, anode, produk</small></span></li>
+        <li><span class="n">4</span><span><a href="#m4">Hitung seperti Faraday</a> <small>massa, muatan, volume</small></span></li>
+        <li><span class="n">5</span><span><a href="#m5">Uji nyali</a> <small>soal latihan</small></span></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- MISI 1 -->
+  <section class="mission" id="m1">
+    <header><span class="num">1</span><h2>Cermati sekitarmu</h2></header>
+    <p class="time">Perkiraan waktu 10 menit</p>
+    <div class="split-bar" aria-hidden="true"></div>
+    <p>Enam hal di bawah ini mungkin pernah kamu lihat atau pakai. Semuanya punya rahasia yang sama.</p>
+
+    <div class="phen">
+      <article><span class="ic" aria-hidden="true">🏍️</span><h3>Velg dan kran yang mengilap</h3><p>Velg motor dan kran kamar mandi umumnya dari besi atau kuningan, tetapi permukaannya dilapisi krom atau nikel yang sangat tipis lewat penyepuhan. Hasilnya mengilap dan lebih tahan karat.</p></article>
+      <article><span class="ic" aria-hidden="true">🔋</span><h3>Aki motor disetrum di bengkel</h3><p>Aki yang tekor tidak langsung dibuang. Ia disambung ke pengisi daya (charger) sehingga reaksinya dibalik dan aki terisi lagi.</p></article>
+      <article><span class="ic" aria-hidden="true">🥫</span><h3>Kaleng dan kusen aluminium</h3><p>Aluminium dibuat dari bijih bauksit lewat elektrolisis leburan Al<sub>2</sub>O<sub>3</sub> pada suhu sekitar 950 &deg;C. Di Indonesia, pabrik peleburannya ada di Sumatra Utara (Inalum).</p></article>
+      <article><span class="ic" aria-hidden="true">🧴</span><h3>Pemutih pakaian dan kaporit kolam</h3><p>Gas klor untuk bahan pemutih dan penjernih air dihasilkan dari elektrolisis larutan garam dapur (NaCl) di industri klor-alkali.</p></article>
+      <article><span class="ic" aria-hidden="true">🔌</span><h3>Kabel tembaga di rumahmu</h3><p>Tembaga hasil peleburan masih kotor. Elektrolisis memurnikannya hingga sekitar 99,9% supaya kabel menghantarkan listrik dengan baik.</p></article>
+      <article><span class="ic" aria-hidden="true">☀️</span><h3>Hidrogen hijau</h3><p>Listrik dari panel surya dipakai memecah air menjadi gas H<sub>2</sub> dan O<sub>2</sub>. Hidrogen itu disiapkan sebagai bahan bakar masa depan.</p></article>
+    </div>
+
+    <p class="q-label">1. Apa kesamaan dari keenam peristiwa di atas? Tulis tebakanmu.</p>
+    <textarea class="rule" rows="2" aria-label="Jawaban 1 misi 1"></textarea>
+    <p class="q-label">2. Pada aki yang disetrum, menurutmu listrik yang masuk "dipakai" untuk apa?</p>
+    <textarea class="rule" rows="2" aria-label="Jawaban 2 misi 1"></textarea>
+    <p class="q-label">3. Sebutkan satu benda lain di sekitarmu yang menurutmu dilapisi atau dibuat dengan bantuan listrik.</p>
+    <textarea class="rule" rows="2" aria-label="Jawaban 3 misi 1"></textarea>
+  </section>
+
+  <!-- MISI 2 -->
+  <section class="mission" id="m2">
+    <header><span class="num">2</span><h2>Bongkar lewat percobaan</h2></header>
+    <p class="time">Perkiraan waktu 40 menit</p>
+    <div class="split-bar" aria-hidden="true"></div>
+
+    <div class="box tip">
+      <h4>Bagi tugas kelompok</h4>
+      <p style="margin:0">Pembawa alat, penghubung rangkaian, pencatat waktu, dan pencatat pengamatan. Bergantian peran saat percobaan B.</p>
+    </div>
+
+    <!-- Percobaan A -->
+    <div class="exp">
+      <h3>Percobaan A. Air garam dan kol ungu</h3>
+      <p><strong>Pertanyaan penelitian:</strong> apa yang terjadi di dekat tiap elektroda saat listrik dialirkan ke larutan garam dapur?</p>
+      <div class="cols">
+        <div>
+          <h4 style="margin:6px 0">Alat dan bahan</h4>
+          <ul>
+            <li>Gelas bening 250 mL</li>
+            <li>Baterai 9 V (atau 3 baterai AA di dudukannya)</li>
+            <li>2 kabel penjepit buaya</li>
+            <li>2 pensil 2B yang diraut di kedua ujungnya (karbon)</li>
+            <li>Garam dapur 2 sendok makan</li>
+            <li>Air kol ungu (kol diblender dengan air, lalu disaring)</li>
+            <li>Air 200 mL, pengaduk, pewaktu di HP</li>
+          </ul>
+        </div>
+        <div>
+          <div class="box warn" style="margin-top:6px">
+            <h4>Keselamatan</h4>
+            <ul>
+              <li>Hanya pakai baterai. Jangan pernah memakai listrik PLN.</li>
+              <li>Hentikan setelah 5 menit dan beri ruang berudara segar.</li>
+              <li>Jangan menghirup gas dari dekat gelas.</li>
+              <li>Pakai kacamata pelindung dan cuci tangan setelahnya.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <h4 style="margin:10px 0 4px">Langkah kerja</h4>
+      <ol class="steps">
+        <li>Larutkan 2 sendok makan garam ke dalam 200 mL air. Tambahkan air kol ungu sekitar 20 mL sampai warnanya merata. Catat warna awal.</li>
+        <li>Pasang dua pensil di tepi gelas dengan jarak 2 sampai 3 cm. Ujungnya tercelup sekitar 3 cm dan tidak boleh bersentuhan.</li>
+        <li>Hubungkan kutub (&#8722;) baterai ke pensil pertama dan kutub (+) ke pensil kedua. Tandai mana katode dan mana anode.</li>
+        <li>Nyalakan pewaktu 5 menit. Amati gelembung dan warna di sekitar tiap pensil pada menit ke-1, 3, dan 5.</li>
+        <li>Lepas kabel, aduk pelan, lalu catat warna akhir seluruh larutan.</li>
+        <li>Tantangan: tukar sambungan kabel selama 2 menit. Apa yang berubah?</li>
+      </ol>
+      <h4 style="margin:12px 0 4px">Tabel pengamatan <small style="font-weight:400;color:var(--muted)">(ketuk kotak untuk mengisi)</small></h4>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Waktu</th><th class="k">Dekat pensil (&#8722;), katode</th><th class="a">Dekat pensil (+), anode</th></tr></thead>
+          <tbody>
+            <tr><td class="pre">Sebelum dialiri</td><td contenteditable="true" aria-label="Katode sebelum"></td><td contenteditable="true" aria-label="Anode sebelum"></td></tr>
+            <tr><td class="pre">Menit ke-1</td><td contenteditable="true" aria-label="Katode menit 1"></td><td contenteditable="true" aria-label="Anode menit 1"></td></tr>
+            <tr><td class="pre">Menit ke-3</td><td contenteditable="true" aria-label="Katode menit 3"></td><td contenteditable="true" aria-label="Anode menit 3"></td></tr>
+            <tr><td class="pre">Menit ke-5</td><td contenteditable="true" aria-label="Katode menit 5"></td><td contenteditable="true" aria-label="Anode menit 5"></td></tr>
+            <tr><td class="pre">Setelah diaduk</td><td colspan="2" contenteditable="true" aria-label="Warna setelah diaduk"></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="box info">
+        <h4>Petunjuk warna kol ungu</h4>
+        <p style="margin:0">Asam menjadi merah atau merah muda. Netral tetap ungu. Basa menjadi biru lalu hijau. Klor dapat membuat warna memudar.</p>
+      </div>
+      <p class="q-label">Pertanyaan analisis</p>
+      <p class="q-label" style="font-weight:400">a. Di elektroda mana gelembung lebih banyak? Gas apa menurutmu?</p>
+      <textarea class="rule" rows="2" aria-label="Analisis A a"></textarea>
+      <p class="q-label" style="font-weight:400">b. Warna di dekat katode menunjukkan suasana apa? Ion apa yang bertambah di sana? Tulis reaksi di katode. (Petunjuk: ion Na<sup>+</sup> tidak ikut tereduksi dalam larutan.)</p>
+      <textarea class="rule" rows="3" aria-label="Analisis A b"></textarea>
+      <p class="q-label" style="font-weight:400">c. Di anode ada dua kemungkinan reaksi: 2Cl<sup>&#8722;</sup> &rarr; Cl<sub>2</sub> + 2e<sup>&#8722;</sup>, atau 2H<sub>2</sub>O &rarr; O<sub>2</sub> + 4H<sup>+</sup> + 4e<sup>&#8722;</sup>. Reaksi mana yang bisa membuat warna merah muda dan memudar? Jelaskan.</p>
+      <textarea class="rule" rows="3" aria-label="Analisis A c"></textarea>
+      <p class="q-label" style="font-weight:400">d. Mengapa kita memakai pensil (karbon), bukan paku besi, sebagai elektroda?</p>
+      <textarea class="rule" rows="2" aria-label="Analisis A d"></textarea>
+    </div>
+
+    <!-- Percobaan B -->
+    <div class="exp b">
+      <h3>Percobaan B. Menyepuh paku dengan tembaga</h3>
+      <p><strong>Pertanyaan penelitian:</strong> bagaimana sebuah paku besi bisa berubah menjadi berwarna tembaga hanya dengan listrik?</p>
+      <div class="cols">
+        <div>
+          <h4 style="margin:6px 0">Alat dan bahan</h4>
+          <ul>
+            <li>Gelas bening 250 mL</li>
+            <li>Baterai 4,5 V sampai 6 V</li>
+            <li>2 kabel penjepit buaya</li>
+            <li>1 paku besi bersih (diamplas, lalu dibilas)</li>
+            <li>Kawat tembaga (kabel yang isolasinya dikupas)</li>
+            <li>Terusi (CuSO<sub>4</sub>) 2 sendok teh dalam 150 mL air</li>
+            <li>Pewaktu di HP, neraca digital (jika ada)</li>
+          </ul>
+        </div>
+        <div>
+          <div class="box warn" style="margin-top:6px">
+            <h4>Keselamatan</h4>
+            <ul>
+              <li>Terusi berbahaya bila tertelan atau terkena mata. Pakai sarung tangan dan kacamata.</li>
+              <li>Larutan bekas dikumpulkan di wadah yang disediakan guru, jangan dibuang ke selokan.</li>
+              <li>Jangan makan atau minum di area percobaan.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <h4 style="margin:10px 0 4px">Langkah kerja</h4>
+      <ol class="steps">
+        <li>Timbang paku (jika ada neraca) dan catat massa awal.</li>
+        <li>Tuang larutan terusi ke gelas. Catat warna larutan.</li>
+        <li>Sambungkan paku ke kutub (&#8722;) baterai dan kawat tembaga ke kutub (+). Celupkan keduanya tanpa bersentuhan.</li>
+        <li>Biarkan 10 menit. Perhatikan permukaan paku dan kawat tembaga.</li>
+        <li>Angkat paku, bilas dengan air, keringkan, lalu timbang lagi dan catat warnanya.</li>
+      </ol>
+      <h4 style="margin:12px 0 4px">Data pengamatan</h4>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Yang diamati</th><th>Sebelum</th><th>Sesudah 10 menit</th></tr></thead>
+          <tbody>
+            <tr><td class="pre">Warna permukaan paku</td><td contenteditable="true" aria-label="Warna paku sebelum"></td><td contenteditable="true" aria-label="Warna paku sesudah"></td></tr>
+            <tr><td class="pre">Warna larutan</td><td contenteditable="true" aria-label="Warna larutan sebelum"></td><td contenteditable="true" aria-label="Warna larutan sesudah"></td></tr>
+            <tr><td class="pre">Kondisi kawat tembaga</td><td contenteditable="true" aria-label="Kawat sebelum"></td><td contenteditable="true" aria-label="Kawat sesudah"></td></tr>
+            <tr><td class="pre">Massa paku (gram)</td><td contenteditable="true" aria-label="Massa sebelum"></td><td contenteditable="true" aria-label="Massa sesudah"></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="q-label">Pertanyaan analisis</p>
+      <p class="q-label" style="font-weight:400">a. Mengapa paku dipasang sebagai katode dan tembaga sebagai anode? Tulis reaksi di masing-masing elektroda.</p>
+      <textarea class="rule" rows="3" aria-label="Analisis B a"></textarea>
+      <p class="q-label" style="font-weight:400">b. Warna biru larutan hampir tidak berubah. Apa alasannya?</p>
+      <textarea class="rule" rows="2" aria-label="Analisis B b"></textarea>
+      <p class="q-label" style="font-weight:400">c. Jika arus rata-rata 0,2 A selama 10 menit, hitung massa tembaga yang seharusnya menempel (A<sub>r</sub> Cu = 63,5). Bandingkan dengan data timbanganmu.</p>
+      <textarea class="rule" rows="4" aria-label="Analisis B c"></textarea>
+      <p class="q-label" style="font-weight:400">d. Prediksikan: apa yang terjadi bila kawat tembaga diganti pensil karbon? Mengapa?</p>
+      <textarea class="rule" rows="3" aria-label="Analisis B d"></textarea>
+    </div>
+
+    <p class="q-label" style="margin-top:20px">Kesimpulan percobaanmu (2 sampai 3 kalimat)</p>
+    <textarea class="rule" rows="3" aria-label="Kesimpulan percobaan"></textarea>
+  </section>
+
+  <!-- MISI 3 -->
+  <section class="mission" id="m3">
+    <header><span class="num">3</span><h2>Temukan aturan mainnya</h2></header>
+    <p class="time">Perkiraan waktu 25 menit</p>
+    <div class="split-bar" aria-hidden="true"></div>
+
+    <h3>Dua sel yang mirip tetapi berlawanan</h3>
+    <p>Lengkapi kolom sel elektrolisis berdasarkan percobaanmu dan kolom sel volta yang sudah terisi.</p>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Aspek</th><th>Sel volta</th><th>Sel elektrolisis</th></tr></thead>
+        <tbody>
+          <tr><td class="pre">Perubahan energi</td><td class="pre">Kimia menjadi listrik</td><td contenteditable="true" aria-label="Perubahan energi elektrolisis"></td></tr>
+          <tr><td class="pre">Sifat reaksi</td><td class="pre">Spontan</td><td contenteditable="true" aria-label="Sifat reaksi elektrolisis"></td></tr>
+          <tr><td class="pre">Kutub anode</td><td class="pre">Negatif (&#8722;)</td><td contenteditable="true" aria-label="Kutub anode elektrolisis"></td></tr>
+          <tr><td class="pre">Kutub katode</td><td class="pre">Positif (+)</td><td contenteditable="true" aria-label="Kutub katode elektrolisis"></td></tr>
+          <tr><td class="pre">Reaksi di anode</td><td class="pre">Oksidasi</td><td contenteditable="true" aria-label="Reaksi anode elektrolisis"></td></tr>
+          <tr><td class="pre">Reaksi di katode</td><td class="pre">Reduksi</td><td contenteditable="true" aria-label="Reaksi katode elektrolisis"></td></tr>
+          <tr><td class="pre">Sumber listrik luar</td><td class="pre">Tidak perlu</td><td contenteditable="true" aria-label="Sumber listrik elektrolisis"></td></tr>
+          <tr><td class="pre">Contoh di sekitarmu</td><td class="pre">Baterai, aki saat dipakai</td><td contenteditable="true" aria-label="Contoh elektrolisis"></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="q-label">Teka-teki: anode di sel volta bermuatan negatif, tetapi di sel elektrolisis positif. Mengapa polaritasnya bisa terbalik padahal anode tetap tempat oksidasi?</p>
+    <textarea class="rule" rows="3" aria-label="Teka-teki polaritas"></textarea>
+    <p class="q-label">Aki motor bisa menjadi dua jenis sel. Kapan aki bekerja sebagai sel volta dan kapan sebagai sel elektrolisis?</p>
+    <textarea class="rule" rows="2" aria-label="Aki dua jenis sel"></textarea>
+
+    <h3>Pegangan untuk menebak produk</h3>
+    <p>Ingat <strong>KARE</strong> (Katode, Reduksi) dan <strong>ANOK</strong> (Anode, Oksidasi).</p>
+    <div class="rules">
+      <div class="rule-card k">
+        <h3>Katode (&#8722;): reduksi</h3>
+        <ul>
+          <li>Kation logam IA, IIA, Al<sup>3+</sup>, dan Mn<sup>2+</sup> dalam larutan <em>tidak</em> direduksi. Air yang direduksi:<br><span class="rx">2H<sub>2</sub>O + 2e<sup>&#8722;</sup> &rarr; H<sub>2</sub> + 2OH<sup>&#8722;</sup></span></li>
+          <li>Larutan asam: <span class="rx">2H<sup>+</sup> + 2e<sup>&#8722;</sup> &rarr; H<sub>2</sub></span></li>
+          <li>Kation logam lain (Cu<sup>2+</sup>, Ag<sup>+</sup>, Ni<sup>2+</sup>, Cr<sup>3+</sup>, dan sejenisnya) direduksi menjadi logamnya.</li>
+          <li>Leburan (tanpa air): kation menjadi logam.</li>
+        </ul>
+      </div>
+      <div class="rule-card a">
+        <h3>Anode (+): oksidasi</h3>
+        <ul>
+          <li><strong>Elektroda inert</strong> (C, Pt, Au) dan anion sisa asam oksi (SO<sub>4</sub><sup>2&#8722;</sup>, NO<sub>3</sub><sup>&#8722;</sup>, PO<sub>4</sub><sup>3&#8722;</sup>): air yang dioksidasi:<br><span class="rx">2H<sub>2</sub>O &rarr; O<sub>2</sub> + 4H<sup>+</sup> + 4e<sup>&#8722;</sup></span></li>
+          <li>Anion halida (Cl<sup>&#8722;</sup>, Br<sup>&#8722;</sup>, I<sup>&#8722;</sup>) menjadi X<sub>2</sub>.</li>
+          <li>Ion OH<sup>&#8722;</sup>: <span class="rx">4OH<sup>&#8722;</sup> &rarr; O<sub>2</sub> + 2H<sub>2</sub>O + 4e<sup>&#8722;</sup></span></li>
+          <li><strong>Elektroda aktif</strong> (Cu, Ag, Ni, Zn, Fe): logam anodenya sendiri larut menjadi ion.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Latihan: tebak produknya</h3>
+    <p>Tulis reaksi (atau zat yang terbentuk) di katode dan anode.</p>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Sel</th><th class="k">Katode (&#8722;)</th><th class="a">Anode (+)</th></tr></thead>
+        <tbody>
+          <tr><td class="pre">1. Leburan NaCl, elektroda C</td><td contenteditable="true" aria-label="1 katode"></td><td contenteditable="true" aria-label="1 anode"></td></tr>
+          <tr><td class="pre">2. Larutan NaCl, elektroda C</td><td contenteditable="true" aria-label="2 katode"></td><td contenteditable="true" aria-label="2 anode"></td></tr>
+          <tr><td class="pre">3. Larutan CuSO<sub>4</sub>, elektroda C</td><td contenteditable="true" aria-label="3 katode"></td><td contenteditable="true" aria-label="3 anode"></td></tr>
+          <tr><td class="pre">4. Larutan CuSO<sub>4</sub>, anode Cu, katode Fe</td><td contenteditable="true" aria-label="4 katode"></td><td contenteditable="true" aria-label="4 anode"></td></tr>
+          <tr><td class="pre">5. Larutan KI, elektroda C</td><td contenteditable="true" aria-label="5 katode"></td><td contenteditable="true" aria-label="5 anode"></td></tr>
+          <tr><td class="pre">6. Larutan H<sub>2</sub>SO<sub>4</sub>, elektroda Pt</td><td contenteditable="true" aria-label="6 katode"></td><td contenteditable="true" aria-label="6 anode"></td></tr>
+          <tr><td class="pre">7. Larutan AgNO<sub>3</sub>, anode Ag</td><td contenteditable="true" aria-label="7 katode"></td><td contenteditable="true" aria-label="7 anode"></td></tr>
+          <tr><td class="pre">8. Leburan Al<sub>2</sub>O<sub>3</sub> (dengan kriolit), elektroda C</td><td contenteditable="true" aria-label="8 katode"></td><td contenteditable="true" aria-label="8 anode"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- MISI 4 -->
+  <section class="mission" id="m4">
+    <header><span class="num">4</span><h2>Hitung seperti Faraday</h2></header>
+    <p class="time">Perkiraan waktu 25 menit</p>
+    <div class="split-bar" aria-hidden="true"></div>
+    <p>Berapa banyak logam yang menempel di paku? Berapa liter gas yang keluar dari gelas? Michael Faraday menemukan bahwa jawabannya bergantung pada jumlah listrik yang mengalir.</p>
+
+    <div class="ladder" aria-label="Tangga hitung">
+      <span class="s">Arus I dan waktu t</span><span class="ar" aria-hidden="true">&rarr;</span>
+      <span class="s">Muatan Q = I &times; t</span><span class="ar" aria-hidden="true">&rarr;</span>
+      <span class="s">mol e<sup>&#8722;</sup> = Q / 96.500</span><span class="ar" aria-hidden="true">&rarr;</span>
+      <span class="s">mol zat (lihat koefisien reaksi)</span><span class="ar" aria-hidden="true">&rarr;</span>
+      <span class="s">massa atau volume</span>
+    </div>
+    <div class="formula">massa = (A<sub>r</sub> &times; I &times; t) / (n &times; 96.500)</div>
+    <div class="box info">
+      <h4>Data yang boleh dipakai</h4>
+      <p style="margin:0">1 F = 96.500 C per mol elektron. A<sub>r</sub>: H = 1, O = 16, Al = 27, Cl = 35,5, Cr = 52, Ni = 59, Cu = 63,5, Ag = 108. Volume molar gas pada STP = 22,4 L/mol. Keterangan: n adalah jumlah elektron per ion logam (Cu<sup>2+</sup> berarti n = 2).</p>
+    </div>
+
+    <h3>Contoh yang sudah dikerjakan</h3>
+    <div class="box tip">
+      <p><strong>Larutan CuSO<sub>4</sub> dielektrolisis dengan elektroda C memakai arus 5 A selama 30 menit. Hitung massa Cu di katode dan volume O<sub>2</sub> (STP) di anode.</strong></p>
+      <ol>
+        <li>Q = 5 &times; (30 &times; 60) = 9.000 C</li>
+        <li>mol e<sup>&#8722;</sup> = 9.000 / 96.500 = 0,0933 mol</li>
+        <li>Katode: Cu<sup>2+</sup> + 2e<sup>&#8722;</sup> &rarr; Cu, sehingga mol Cu = 0,0933 / 2 = 0,0466 mol. Massa Cu = 0,0466 &times; 63,5 = <strong>2,96 g</strong></li>
+        <li>Anode: 2H<sub>2</sub>O &rarr; O<sub>2</sub> + 4H<sup>+</sup> + 4e<sup>&#8722;</sup>, sehingga mol O<sub>2</sub> = 0,0933 / 4 = 0,0233 mol. Volume = 0,0233 &times; 22,4 = <strong>0,52 L</strong></li>
+      </ol>
+    </div>
+
+    <h3>Coba sendiri</h3>
+    <p class="q-label">a. Arus 3 A dialirkan selama 32 menit 10 detik. Berapa mol elektron yang mengalir?</p>
+    <textarea class="rule" rows="3" aria-label="Faraday a"></textarea>
+    <p class="q-label">b. Larutan NiSO<sub>4</sub> dielektrolisis dengan arus 2 A selama 1 jam. Hitung massa Ni yang mengendap di katode.</p>
+    <textarea class="rule" rows="4" aria-label="Faraday b"></textarea>
+    <p class="q-label">c. Larutan H<sub>2</sub>SO<sub>4</sub> dielektrolisis dengan elektroda Pt. Berapa liter O<sub>2</sub> (STP) terbentuk di anode ketika 0,2 mol elektron mengalir?</p>
+    <textarea class="rule" rows="3" aria-label="Faraday c"></textarea>
+  </section>
+
+  <!-- MISI 5 -->
+  <section class="mission" id="m5">
+    <header><span class="num">5</span><h2>Uji nyali</h2></header>
+    <p class="time">Perkiraan waktu 30 menit</p>
+    <div class="split-bar" aria-hidden="true"></div>
+
+    <h3>Bagian A. Pilihan ganda</h3>
+    <p>Ketuk satu jawaban. Kamu langsung tahu benar atau salah beserta alasannya, tetapi tiap soal hanya bisa dijawab sekali.</p>
+    <div class="scorebar" role="status" aria-live="polite"><span id="score">0 / 8 benar</span><button class="btn" type="button" id="reset">Ulangi</button></div>
+
+    <div class="q" data-answer="C">
+      <p class="stem">1. Pernyataan yang benar tentang sel elektrolisis adalah ...</p>
+      <button class="opt" data-k="A" type="button">A. Energi kimia diubah menjadi energi listrik</button>
+      <button class="opt" data-k="B" type="button">B. Katode bermuatan positif dan menjadi tempat oksidasi</button>
+      <button class="opt" data-k="C" type="button">C. Anode bermuatan positif dan menjadi tempat oksidasi</button>
+      <button class="opt" data-k="D" type="button">D. Reaksinya berlangsung spontan tanpa sumber listrik</button>
+      <button class="opt" data-k="E" type="button">E. Elektron mengalir dari katode ke anode melalui larutan</button>
+      <div class="expl" hidden>Pada elektrolisis, listrik diubah menjadi energi kimia. Polaritas mengikuti sumber listrik: anode (+) tempat oksidasi, katode (&#8722;) tempat reduksi. Elektron mengalir lewat kawat luar, sedangkan larutan dihantarkan oleh ion.</div>
+    </div>
+
+    <div class="q" data-answer="B">
+      <p class="stem">2. Larutan Na<sub>2</sub>SO<sub>4</sub> dielektrolisis dengan elektroda karbon. Produk di katode dan anode berturut-turut adalah ...</p>
+      <button class="opt" data-k="A" type="button">A. Na dan O<sub>2</sub></button>
+      <button class="opt" data-k="B" type="button">B. H<sub>2</sub> dan O<sub>2</sub></button>
+      <button class="opt" data-k="C" type="button">C. O<sub>2</sub> dan H<sub>2</sub></button>
+      <button class="opt" data-k="D" type="button">D. Na dan S</button>
+      <button class="opt" data-k="E" type="button">E. H<sub>2</sub> dan Cl<sub>2</sub></button>
+      <div class="expl" hidden>Na<sup>+</sup> tidak tereduksi dalam larutan, jadi air direduksi menjadi H<sub>2</sub>. SO<sub>4</sub><sup>2&#8722;</sup> sulit dioksidasi, jadi air dioksidasi menjadi O<sub>2</sub>.</div>
+    </div>
+
+    <div class="q" data-answer="B">
+      <p class="stem">3. Dina ingin menyepuh sendok besi dengan perak. Susunan sel yang tepat adalah ...</p>
+      <button class="opt" data-k="A" type="button">A. Sendok sebagai anode, batang perak sebagai katode, larutan AgNO<sub>3</sub></button>
+      <button class="opt" data-k="B" type="button">B. Sendok sebagai katode, batang perak sebagai anode, larutan AgNO<sub>3</sub></button>
+      <button class="opt" data-k="C" type="button">C. Sendok sebagai katode, batang perak sebagai anode, larutan FeSO<sub>4</sub></button>
+      <button class="opt" data-k="D" type="button">D. Sendok sebagai anode, batang perak sebagai katode, larutan FeSO<sub>4</sub></button>
+      <button class="opt" data-k="E" type="button">E. Sendok dan batang perak sama-sama menjadi katode</button>
+      <div class="expl" hidden>Benda yang dilapisi dipasang di katode agar ion Ag<sup>+</sup> tereduksi menjadi Ag di permukaannya. Anodenya perak yang melarut, dan elektrolitnya mengandung ion perak.</div>
+    </div>
+
+    <div class="q" data-answer="B">
+      <p class="stem">4. Aki motor yang "disetrum" di bengkel bekerja sebagai ...</p>
+      <button class="opt" data-k="A" type="button">A. Sel volta, karena menghasilkan arus listrik</button>
+      <button class="opt" data-k="B" type="button">B. Sel elektrolisis, karena energi listrik diubah menjadi energi kimia</button>
+      <button class="opt" data-k="C" type="button">C. Sel yang tidak mengalami reaksi redoks</button>
+      <button class="opt" data-k="D" type="button">D. Sel volta, karena kutub positif aki dihubungkan ke kutub negatif charger</button>
+      <button class="opt" data-k="E" type="button">E. Sel yang reaksinya sama persis dengan saat aki dipakai</button>
+      <div class="expl" hidden>Saat disetrum, sumber listrik luar memaksa reaksi berjalan terbalik sehingga aki menjadi sel elektrolisis. Kutub (+) aki disambung ke kutub (+) charger.</div>
+    </div>
+
+    <div class="q" data-answer="B">
+      <p class="stem">5. Larutan NaCl dielektrolisis dengan elektroda karbon. Larutan di sekitar katode yang ditetesi fenolftalein menjadi merah muda. Penyebabnya adalah ...</p>
+      <button class="opt" data-k="A" type="button">A. Terbentuk logam Na</button>
+      <button class="opt" data-k="B" type="button">B. Terbentuk ion OH<sup>&#8722;</sup> dari reduksi air</button>
+      <button class="opt" data-k="C" type="button">C. Terbentuk gas Cl<sub>2</sub> yang bersifat basa</button>
+      <button class="opt" data-k="D" type="button">D. Terbentuk ion H<sup>+</sup> dari oksidasi air</button>
+      <button class="opt" data-k="E" type="button">E. Terbentuk endapan NaCl</button>
+      <div class="expl" hidden>Di katode: 2H<sub>2</sub>O + 2e<sup>&#8722;</sup> &rarr; H<sub>2</sub> + 2OH<sup>&#8722;</sup>. Ion OH<sup>&#8722;</sup> membuat larutan basa sehingga fenolftalein berwarna merah muda.</div>
+    </div>
+
+    <div class="q" data-answer="C">
+      <p class="stem">6. Arus 2 A dialirkan selama 965 detik ke dalam larutan AgNO<sub>3</sub>. Massa Ag yang mengendap di katode (A<sub>r</sub> Ag = 108) adalah ...</p>
+      <button class="opt" data-k="A" type="button">A. 0,54 g</button>
+      <button class="opt" data-k="B" type="button">B. 1,08 g</button>
+      <button class="opt" data-k="C" type="button">C. 2,16 g</button>
+      <button class="opt" data-k="D" type="button">D. 4,32 g</button>
+      <button class="opt" data-k="E" type="button">E. 21,6 g</button>
+      <div class="expl" hidden>Q = 2 &times; 965 = 1.930 C. mol e<sup>&#8722;</sup> = 1.930 / 96.500 = 0,02 mol. Ag<sup>+</sup> + e<sup>&#8722;</sup> &rarr; Ag, sehingga mol Ag = 0,02 dan massa = 0,02 &times; 108 = 2,16 g.</div>
+    </div>
+
+    <div class="q" data-answer="B">
+      <p class="stem">7. Sel AgNO<sub>3</sub> dan sel CuSO<sub>4</sub> dirangkai seri dan dialiri arus yang sama. Jika di sel pertama mengendap 2,16 g Ag (A<sub>r</sub> Ag = 108, Cu = 63,5), massa Cu yang mengendap di sel kedua adalah ...</p>
+      <button class="opt" data-k="A" type="button">A. 0,32 g</button>
+      <button class="opt" data-k="B" type="button">B. 0,635 g</button>
+      <button class="opt" data-k="C" type="button">C. 1,27 g</button>
+      <button class="opt" data-k="D" type="button">D. 2,16 g</button>
+      <button class="opt" data-k="E" type="button">E. 4,32 g</button>
+      <div class="expl" hidden>Rangkaian seri berarti jumlah elektron sama: 2,16 g Ag = 0,02 mol e<sup>&#8722;</sup>. Cu<sup>2+</sup> membutuhkan 2 e<sup>&#8722;</sup>, sehingga mol Cu = 0,01 dan massa = 0,01 &times; 63,5 = 0,635 g.</div>
+    </div>
+
+    <div class="q" data-answer="B">
+      <p class="stem">8. Pada pemurnian tembaga secara elektrolisis, pernyataan yang benar adalah ...</p>
+      <button class="opt" data-k="A" type="button">A. Tembaga murni dipasang sebagai anode</button>
+      <button class="opt" data-k="B" type="button">B. Pengotor Ag dan Au jatuh sebagai lumpur anode</button>
+      <button class="opt" data-k="C" type="button">C. Zn dan Fe ikut mengendap di katode bersama Cu</button>
+      <button class="opt" data-k="D" type="button">D. Elektrolit yang dipakai adalah larutan NaCl</button>
+      <button class="opt" data-k="E" type="button">E. Massa katode berkurang selama proses</button>
+      <div class="expl" hidden>Anode adalah tembaga kotor, katode tembaga murni, elektrolit larutan CuSO<sub>4</sub>. Ag dan Au kurang reaktif daripada Cu sehingga tidak larut dan jatuh sebagai lumpur. Zn dan Fe larut sebagai ion tetapi tidak tereduksi di katode. Massa katode bertambah.</div>
+    </div>
+
+    <h3>Bagian B. Uraian</h3>
+    <p class="q-label">1. Larutan KI dielektrolisis dengan elektroda karbon.<br><span style="font-weight:400">a. Tulis reaksi di katode, di anode, dan reaksi totalnya.<br>b. Apa yang teramati di sekitar katode jika diberi fenolftalein, dan di sekitar anode?</span></p>
+    <textarea class="rule" rows="5" aria-label="Uraian 1"></textarea>
+
+    <p class="q-label">2. Sebuah bengkel menyepuh velg besi dengan krom dari larutan yang mengandung ion Cr<sup>3+</sup>.<br><span style="font-weight:400">a. Velg dipasang sebagai katode atau anode? Tulis reaksi pelapisannya.<br>b. Berapa menit yang diperlukan agar 1,04 g Cr menempel jika arusnya 10 A? (A<sub>r</sub> Cr = 52)</span></p>
+    <textarea class="rule" rows="6" aria-label="Uraian 2"></textarea>
+
+    <p class="q-label">3. Aluminium dibuat dengan elektrolisis leburan Al<sub>2</sub>O<sub>3</sub>.<br><span style="font-weight:400">a. Mengapa aluminium tidak dibuat dengan mengelektrolisis larutan AlCl<sub>3</sub>?<br>b. Berapa kilogram Al diperoleh bila arus 9.650 A dialirkan selama 1 jam? (A<sub>r</sub> Al = 27)</span></p>
+    <textarea class="rule" rows="6" aria-label="Uraian 3"></textarea>
+
+    <p class="q-label">4. Larutan CuSO<sub>4</sub> berwarna biru dielektrolisis dengan elektroda karbon selama beberapa menit.<br><span style="font-weight:400">a. Tulis reaksi di katode dan anode.<br>b. Jelaskan mengapa warna biru larutan memudar dan perkirakan apakah pH larutan naik atau turun.</span></p>
+    <textarea class="rule" rows="6" aria-label="Uraian 4"></textarea>
+
+    <p class="q-label">5. Sebuah proyek hidrogen hijau memecah air (dalam larutan Na<sub>2</sub>SO<sub>4</sub>, elektroda Pt) dengan listrik panel surya.<br><span style="font-weight:400">a. Tulis reaksi katode, anode, dan reaksi total elektrolisis air.<br>b. Bila terbentuk 1,12 L gas H<sub>2</sub> (STP), berapa muatan listrik yang dialirkan?<br>c. Berapa perbandingan volume H<sub>2</sub> dan O<sub>2</sub> yang terbentuk?</span></p>
+    <textarea class="rule" rows="7" aria-label="Uraian 5"></textarea>
+  </section>
+
+  <!-- REFLEKSI -->
+  <section class="card" style="margin-top:44px" aria-labelledby="refl">
+    <h2 id="refl" style="font-size:1.5rem;margin-bottom:10px">Cermin diri</h2>
+    <p>Centang yang sudah kamu kuasai:</p>
+    <div style="display:grid;gap:6px;margin-bottom:14px">
+      <label><input type="checkbox"> Aku bisa membedakan sel volta dan sel elektrolisis.</label>
+      <label><input type="checkbox"> Aku bisa menentukan produk di katode dan anode.</label>
+      <label><input type="checkbox"> Aku bisa menjelaskan cara menyepuh dan memurnikan logam.</label>
+      <label><input type="checkbox"> Aku bisa menghitung hasil elektrolisis dengan hukum Faraday.</label>
+    </div>
+    <p class="q-label">Hal yang paling menarik bagiku hari ini:</p>
+    <textarea class="rule" rows="2" aria-label="Refleksi menarik"></textarea>
+    <p class="q-label">Hal yang masih membuatku bingung:</p>
+    <textarea class="rule" rows="2" aria-label="Refleksi bingung"></textarea>
+    <p class="q-label">Misi tambahan di rumah: cari 3 benda di sekitarmu yang prosesnya melibatkan elektrolisis, lalu tulis katode dan anodenya.</p>
+    <textarea class="rule" rows="3" aria-label="Misi tambahan"></textarea>
+  </section>
+
+  <!-- KUNCI GURU -->
+  <details class="guru">
+    <summary>Khusus guru: kunci jawaban dan catatan</summary>
+
+    <h3>Catatan percobaan A (air garam dan kol ungu)</h3>
+    <ul>
+      <li>Katode (&#8722;): gelembung lebih banyak (H<sub>2</sub>), warna kol bergeser ke biru atau hijau (basa karena OH<sup>&#8722;</sup>). Reaksi: 2H<sub>2</sub>O + 2e<sup>&#8722;</sup> &rarr; H<sub>2</sub> + 2OH<sup>&#8722;</sup>.</li>
+      <li>Anode (+): gelembung lebih sedikit, warna bergeser ke merah muda atau memudar. Cl<sub>2</sub> (2Cl<sup>&#8722;</sup> &rarr; Cl<sub>2</sub> + 2e<sup>&#8722;</sup>) dapat memudarkan warna, sedangkan oksidasi air menambah H<sup>+</sup> yang membuat suasana asam (merah muda). Pada larutan encer dan tegangan rendah, keduanya bersaing, jadi terima jawaban yang beralasan.</li>
+      <li>Karbon dipakai karena inert, sedangkan besi akan ikut teroksidasi di anode.</li>
+      <li>Kutub dibalik: peran katode dan anode tertukar, begitu pula daerah warnanya setelah beberapa menit.</li>
+    </ul>
+    <h3>Catatan percobaan B (penyepuhan)</h3>
+    <ul>
+      <li>Katode: Cu<sup>2+</sup> + 2e<sup>&#8722;</sup> &rarr; Cu (paku jadi cokelat kemerahan). Anode: Cu &rarr; Cu<sup>2+</sup> + 2e<sup>&#8722;</sup>.</li>
+      <li>Warna biru tetap karena Cu<sup>2+</sup> yang terpakai di katode diganti oleh Cu<sup>2+</sup> dari anode.</li>
+      <li>Perhitungan teori: Q = 0,2 &times; 600 = 120 C; mol e<sup>&#8722;</sup> = 1,24 &times; 10<sup>&#8722;3</sup>; massa Cu &asymp; 0,04 g. Massa nyata biasanya lebih kecil karena arus tidak konstan dan sebagian lapisan terlepas saat dibilas.</li>
+      <li>Anode diganti karbon: terbentuk O<sub>2</sub> dan H<sup>+</sup>, warna biru memudar karena Cu<sup>2+</sup> tidak diganti.</li>
+    </ul>
+
+    <h3>Misi 3: tabel perbandingan</h3>
+    <p>Elektrolisis: listrik menjadi kimia; tidak spontan (dipaksa listrik); anode positif (+); katode negatif (&#8722;); anode oksidasi; katode reduksi; perlu sumber listrik luar; contoh: aki saat disetrum, penyepuhan, pemurnian tembaga. Teka-teki polaritas: pada sel volta, polaritas ditentukan oleh reaksi yang melepas elektron di anode; pada elektrolisis, polaritas ditentukan oleh sumber listrik luar, tetapi tetap anode = oksidasi. Aki: sel volta saat dipakai, sel elektrolisis saat disetrum.</p>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Sel</th><th>Katode</th><th>Anode</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Na<sup>+</sup> + e<sup>&#8722;</sup> &rarr; Na</td><td>2Cl<sup>&#8722;</sup> &rarr; Cl<sub>2</sub> + 2e<sup>&#8722;</sup></td></tr>
+          <tr><td>2</td><td>2H<sub>2</sub>O + 2e<sup>&#8722;</sup> &rarr; H<sub>2</sub> + 2OH<sup>&#8722;</sup></td><td>2Cl<sup>&#8722;</sup> &rarr; Cl<sub>2</sub> + 2e<sup>&#8722;</sup></td></tr>
+          <tr><td>3</td><td>Cu<sup>2+</sup> + 2e<sup>&#8722;</sup> &rarr; Cu</td><td>2H<sub>2</sub>O &rarr; O<sub>2</sub> + 4H<sup>+</sup> + 4e<sup>&#8722;</sup></td></tr>
+          <tr><td>4</td><td>Cu<sup>2+</sup> + 2e<sup>&#8722;</sup> &rarr; Cu</td><td>Cu &rarr; Cu<sup>2+</sup> + 2e<sup>&#8722;</sup></td></tr>
+          <tr><td>5</td><td>2H<sub>2</sub>O + 2e<sup>&#8722;</sup> &rarr; H<sub>2</sub> + 2OH<sup>&#8722;</sup></td><td>2I<sup>&#8722;</sup> &rarr; I<sub>2</sub> + 2e<sup>&#8722;</sup></td></tr>
+          <tr><td>6</td><td>2H<sup>+</sup> + 2e<sup>&#8722;</sup> &rarr; H<sub>2</sub></td><td>2H<sub>2</sub>O &rarr; O<sub>2</sub> + 4H<sup>+</sup> + 4e<sup>&#8722;</sup></td></tr>
+          <tr><td>7</td><td>Ag<sup>+</sup> + e<sup>&#8722;</sup> &rarr; Ag</td><td>Ag &rarr; Ag<sup>+</sup> + e<sup>&#8722;</sup></td></tr>
+          <tr><td>8</td><td>Al<sup>3+</sup> + 3e<sup>&#8722;</sup> &rarr; Al</td><td>2O<sup>2&#8722;</sup> &rarr; O<sub>2</sub> + 4e<sup>&#8722;</sup> (O<sub>2</sub> bereaksi dengan anode C membentuk CO<sub>2</sub>)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Misi 4: latihan Faraday</h3>
+    <p>a. t = 1.930 s, Q = 5.790 C, <strong>0,06 mol e<sup>&#8722;</sup></strong>. b. Q = 7.200 C; mol e<sup>&#8722;</sup> = 0,0746; mol Ni = 0,0373; massa = <strong>&asymp; 2,20 g</strong>. c. mol O<sub>2</sub> = 0,2 / 4 = 0,05; volume = <strong>1,12 L</strong>.</p>
+
+    <h3>Misi 5A: kunci pilihan ganda</h3>
+    <p>1 C, 2 B, 3 B, 4 B, 5 B, 6 C, 7 B, 8 B. (Saran skor: 5 poin per soal, total 40.)</p>
+
+    <h3>Misi 5B: kunci uraian (saran skor: 12 poin per soal, total 60)</h3>
+    <ol>
+      <li>a. Katode: 2H<sub>2</sub>O + 2e<sup>&#8722;</sup> &rarr; H<sub>2</sub> + 2OH<sup>&#8722;</sup>; anode: 2I<sup>&#8722;</sup> &rarr; I<sub>2</sub> + 2e<sup>&#8722;</sup>; total: 2H<sub>2</sub>O + 2I<sup>&#8722;</sup> &rarr; H<sub>2</sub> + 2OH<sup>&#8722;</sup> + I<sub>2</sub>. b. Dekat katode muncul warna merah muda (basa); dekat anode larutan menjadi cokelat kekuningan (I<sub>2</sub>).</li>
+      <li>a. Katode: Cr<sup>3+</sup> + 3e<sup>&#8722;</sup> &rarr; Cr. b. mol Cr = 1,04 / 52 = 0,02; mol e<sup>&#8722;</sup> = 0,06; Q = 5.790 C; t = 579 s &asymp; <strong>9,65 menit</strong>.</li>
+      <li>a. Dalam larutan, air (E&deg; lebih positif) lebih mudah direduksi daripada Al<sup>3+</sup>, sehingga yang terbentuk adalah H<sub>2</sub>, bukan Al. b. Q = 9.650 &times; 3.600 = 3,474 &times; 10<sup>7</sup> C; mol e<sup>&#8722;</sup> = 360; mol Al = 120; massa = 3.240 g = <strong>3,24 kg</strong>.</li>
+      <li>a. Katode: Cu<sup>2+</sup> + 2e<sup>&#8722;</sup> &rarr; Cu; anode: 2H<sub>2</sub>O &rarr; O<sub>2</sub> + 4H<sup>+</sup> + 4e<sup>&#8722;</sup>. b. Ion Cu<sup>2+</sup> berkurang sehingga biru memudar, dan H<sup>+</sup> bertambah sehingga <strong>pH turun</strong>.</li>
+      <li>a. Katode: 2H<sub>2</sub>O + 2e<sup>&#8722;</sup> &rarr; H<sub>2</sub> + 2OH<sup>&#8722;</sup> (&times;2); anode: 2H<sub>2</sub>O &rarr; O<sub>2</sub> + 4H<sup>+</sup> + 4e<sup>&#8722;</sup>; total: 2H<sub>2</sub>O &rarr; 2H<sub>2</sub> + O<sub>2</sub>. b. mol H<sub>2</sub> = 0,05; mol e<sup>&#8722;</sup> = 0,1; Q = <strong>9.650 C</strong>. c. H<sub>2</sub> : O<sub>2</sub> = <strong>2 : 1</strong>.</li>
+    </ol>
+  </details>
+
+  <footer>LKPD Kimia kelas XII, materi sel elektrolisis. Lakukan percobaan hanya dengan bimbingan guru.</footer>
+</div>
+
+<script>
+(function(){
+  var qs = Array.prototype.slice.call(document.querySelectorAll('.q'));
+  var scoreEl = document.getElementById('score');
+  function update(){
+    var done = qs.filter(function(q){return q.dataset.done;}).length;
+    var right = qs.filter(function(q){return q.dataset.right === '1';}).length;
+    scoreEl.textContent = right + ' / ' + qs.length + ' benar' + (done < qs.length ? ' (' + done + ' terjawab)' : '');
+  }
+  qs.forEach(function(q){
+    var ans = q.dataset.answer;
+    q.querySelectorAll('.opt').forEach(function(b){
+      b.addEventListener('click', function(){
+        if (q.dataset.done) return;
+        q.dataset.done = '1';
+        if (b.dataset.k === ans){ b.classList.add('right'); q.dataset.right = '1'; }
+        else { b.classList.add('wrong'); q.querySelector('.opt[data-k="' + ans + '"]').classList.add('right'); }
+        q.querySelector('.expl').hidden = false;
+        q.querySelectorAll('.opt').forEach(function(o){ o.disabled = true; });
+        update();
+      });
+    });
+  });
+  document.getElementById('reset').addEventListener('click', function(){
+    qs.forEach(function(q){
+      delete q.dataset.done; delete q.dataset.right;
+      q.querySelector('.expl').hidden = true;
+      q.querySelectorAll('.opt').forEach(function(o){ o.disabled = false; o.classList.remove('right','wrong'); });
+    });
+    update();
+  });
+  update();
+})();
+</script>
+</body>
+</html>
